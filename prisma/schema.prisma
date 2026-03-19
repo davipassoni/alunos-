@@ -13,11 +13,21 @@ datasource db {
 }
 
 model alunos {
-  id  Int @id @default(autoincrement())
-  nome  String 
- idade Int
-  email String @unique
-  cpf Int @unique
+  id        Int      @id @default(autoincrement())
+  nome      String
+  idade     Int
+  email     String   @unique
+  cpf       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model cursos {
+  id        Int      @id @default(autoincrement())
+  nome      String @unique
+  professor String 
+  cargaHoraria Int
+  descricao String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

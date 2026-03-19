@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 
 import { prisma } from "../../config/prisma";
-import primaErrorCodes from "../../config/prismaErrorCodes.json";
+import prismaErrorCodes from "../../config/prismaErrorCodes.json";
 import { Prisma } from "../../generated/prisma/client";
 
 const handleError = (e: unknown, response: Response) => {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
         // @ts-ignore
-        return response.status(primaErrorCodes[e.code] || 500).json(e.message);
+        return response.status(prismaErrorCodes[e.code] || 500).json(e.message);
     }
 
     if (e instanceof Prisma.PrismaClientValidationError) {
@@ -26,25 +26,26 @@ export default {
 
     list: async (request: Request, response: Response) => {
         try {
-            const users = await prisma.alunos.findMany();
-            return response.status(200).json(users);
+            const cursos = await prisma.cursos.findMany();
+            return response.status(200).json(cursos);
         } catch (e) {
+             console.error("Error fetching courses:", e);
             return handleError(e, response);
         }
     },
 
     create: async (request: Request, response: Response) => {
         try {
-            const { name, idade, cpf, email } = request.body;
-            const user = await prisma.alunos.create({
+            const { nome, professor, cargaHoraria, descricao } = request.body;
+            const curso = await prisma.cursos.create({
                 data: {
-                    nome: name,
-                    idade,
-                    cpf,
-                    email
+                    nome,
+                    professor,
+                    cargaHoraria,
+                    descricao
                 }
             });
-            return response.status(201).json(user);
+            return response.status(201).json(curso);
         } catch (e) {
             return handleError(e, response);
         }
@@ -52,18 +53,18 @@ export default {
 
     update: async (request: Request, response: Response) => {
         try {
-            const { name, idade, cpf, email } = request.body;
+            const { nome, professor, cargaHoraria, descricao } = request.body;
             const { id } = request.params;
-            const user = await prisma.alunos.update({
+            const curso = await prisma.cursos.update({
                 where: { id: +id },
                 data: {
-                    nome: name,
-                    idade,
-                    cpf,
-                    email
+                    nome,
+                    professor,
+                    cargaHoraria,
+                    descricao
                 }
             });
-            return response.status(200).json(user);
+            return response.status(200).json(curso);
         } catch (e) {
             return handleError(e, response);
         }
@@ -72,10 +73,10 @@ export default {
     getById: async (request: Request, response: Response) => {
         try {
             const { id } = request.params;
-            const user = await prisma.alunos.findUnique({
+            const curso = await prisma.cursos.findUnique({
                 where: { id: +id }
             });
-            return response.status(200).json(user);
+            return response.status(200).json(curso);
         } catch (e) {
             return handleError(e, response);
         }
@@ -84,12 +85,12 @@ export default {
     delete: async (request: Request, response: Response) => {
         try {
             const { id } = request.params;
-            const user = await prisma.alunos.delete({
+            const curso = await prisma.cursos.delete({
                 where: {
                     id: +id,
                 },
             });
-            return response.status(200).json(user);
+            return response.status(200).json(curso);
         } catch (e) {
             return handleError(e, response);
         }
