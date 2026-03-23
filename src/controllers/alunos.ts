@@ -26,7 +26,9 @@ export default {
 
     list: async (request: Request, response: Response) => {
         try {
-            const users = await prisma.alunos.findMany();
+            const users = await prisma.alunos.findMany({
+                include: { cursos: true }
+            });
             return response.status(200).json(users);
         } catch (e) {
             return handleError(e, response);
@@ -35,10 +37,10 @@ export default {
 
     create: async (request: Request, response: Response) => {
         try {
-            const { name, idade, cpf, email } = request.body;
+            const { nome, idade, cpf, email } = request.body;
             const user = await prisma.alunos.create({
                 data: {
-                    nome: name,
+                    nome,
                     idade,
                     cpf,
                     email
@@ -52,12 +54,12 @@ export default {
 
     update: async (request: Request, response: Response) => {
         try {
-            const { name, idade, cpf, email } = request.body;
+            const { nome, idade, cpf, email } = request.body;
             const { id } = request.params;
             const user = await prisma.alunos.update({
                 where: { id: +id },
                 data: {
-                    nome: name,
+                    nome,
                     idade,
                     cpf,
                     email
@@ -73,7 +75,8 @@ export default {
         try {
             const { id } = request.params;
             const user = await prisma.alunos.findUnique({
-                where: { id: +id }
+                where: { id: +id },
+                include: { cursos: true }
             });
             return response.status(200).json(user);
         } catch (e) {
@@ -88,6 +91,43 @@ export default {
                 where: {
                     id: +id,
                 },
+            });
+            return response.status(200).json(user);
+        } catch (e) {
+            return handleError(e, response);
+        }
+    },
+
+    matricular: async (request: Request, response: Response) => {
+        try {
+            const { id } = request.params;
+            const { cursoId } = request.body;
+            const user = await prisma.alunos.update({
+                where: { id: +id },
+                data: {
+                    cursos: {
+                        connect: { id: +cursoId }
+                    }
+                },
+                include: { cursos: true }
+            });
+            return response.status(200).json(user);
+        } catch (e) {
+            return handleError(e, response);
+        }
+    },
+
+    desmatricular: async (request: Request, response: Response) => {
+        try {
+            const { id, cursoId } = request.params;
+            const user = await prisma.alunos.update({
+                where: { id: +id },
+                data: {
+                    cursos: {
+                        disconnect: { id: +cursoId }
+                    }
+                },
+                include: { cursos: true }
             });
             return response.status(200).json(user);
         } catch (e) {

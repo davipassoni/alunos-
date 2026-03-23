@@ -26,10 +26,11 @@ export default {
 
     list: async (request: Request, response: Response) => {
         try {
-            const cursos = await prisma.cursos.findMany();
+            const cursos = await prisma.cursos.findMany({
+                include: { alunos: true } // 👈
+            });
             return response.status(200).json(cursos);
         } catch (e) {
-             console.error("Error fetching courses:", e);
             return handleError(e, response);
         }
     },
@@ -74,7 +75,8 @@ export default {
         try {
             const { id } = request.params;
             const curso = await prisma.cursos.findUnique({
-                where: { id: +id }
+                where: { id: +id },
+                include: { alunos: true } // 👈
             });
             return response.status(200).json(curso);
         } catch (e) {

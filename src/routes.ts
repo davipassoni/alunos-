@@ -1,47 +1,30 @@
-import { Router} from "express";
+import { Router } from "express";
 
 import alunosController from "./controllers/alunos";
-
 import cursosController from "./controllers/cursos";
 
 const routes = Router();
 
-routes.get("/", (request, response) => response.status(200).json({success: true}),);
-
-routes.get("/alunos", (request, response) => alunosController.list(request, response));
-
-routes.post("/aluno", (request, respons) => alunosController.create(request, respons));
-
-routes.put("/alunos/:id", (request, respons) => alunosController.update(request, respons));
-
-routes.get("/alunos/:id", (request, respons) => alunosController.getById(request, respons))
-
-routes.delete("/alunos/:id", (request, respons) => alunosController.delete(request, respons));
-
-
-
-routes.get("/cursos", (request, response) => 
-    cursosController.list(request, response)
+routes.get("/", (request, response) =>
+    response.status(200).json({ success: true })
 );
 
-routes.post("/curso", (request, response) => 
-    cursosController.create(request, response)
-);
+// Rotas de alunos
+routes.get("/alunos", alunosController.list);
+routes.get("/alunos/:id", alunosController.getById);
+routes.post("/alunos", alunosController.create);
+routes.put("/alunos/:id", alunosController.update);
+routes.delete("/alunos/:id", alunosController.delete);
 
+// Matrícula
+routes.post("/alunos/:id/matricula", alunosController.matricular);
+routes.delete("/alunos/:id/matricula/:cursoId", alunosController.desmatricular);
 
-routes.put("/cursos/:id", (request, response) => 
-    cursosController.update(request, response)
-);
+// Rotas de cursos
+routes.get("/cursos", cursosController.list);
+routes.get("/cursos/:id", cursosController.getById);
+routes.post("/cursos", cursosController.create);
+routes.put("/cursos/:id", cursosController.update);
+routes.delete("/cursos/:id", cursosController.delete);
 
-routes.get("/cursos/:id", (request, response) => 
-    cursosController.getById(request, response)
-);
-
-
-routes.delete("/cursos/:id", (request, response) => 
-    cursosController.delete(request, response)
-);
 export default routes;
-
-// ou abreviar assim routes.post("/aluno", alunosController.create);
-//alunosController.list(request, response),);
