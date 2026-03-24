@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model alunos {
+  id        Int       @id @default(autoincrement())
+  nome      String
+  idade     Int
+  email     String    @unique
+  cpf       String    @unique
+  cursos    cursos[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model cursos {
+  id            Int       @id @default(autoincrement())
+  nome          String    @unique
+  professor     String
+  cargaHoraria  Int
+  descricao     String
+  alunos        alunos[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
